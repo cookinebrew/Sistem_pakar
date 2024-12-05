@@ -15,7 +15,7 @@ export default function Home() {
         const hasilDeteksi = deteksiPenyakit(selectedGejala);
         setHasil(hasilDeteksi);
         setIsLoading(false);
-      }, 500); // Simulasi waktu analisis
+      }, 500);
       return () => clearTimeout(timer);
     } else {
       setHasil([]);
@@ -34,63 +34,88 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">
         Sistem Pakar Deteksi Penyakit Ikan
       </h1>
 
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">Pilih Gejala yang Terlihat:</h2>
-        <div className="grid gap-3">
-          {gejala.map(g => (
-            <div key={g.kode} className="flex items-center">
-              <input 
-                type="checkbox" 
-                id={g.kode}
-                checked={selectedGejala.includes(g.kode)}
-                onChange={() => handleGejalaChange(g.kode)}
-                className="mr-3"
-              />
-              <label htmlFor={g.kode}>{g.nama}</label>
-            </div>
-          ))}
-        </div>
-        <button 
-          onClick={handleReset}
-          className="mt-6 bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition duration-300"
-        >
-          Analisis Ulang
-        </button>
-      </div>
-
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : (
-        hasil.length > 0 ? (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-4">Hasil Analisis:</h2>
-            <div className="space-y-6">
-              {hasil.map(p => (
-                <div key={p.kode} className="border p-4 rounded shadow-lg transition transform hover:scale-105">
-                  <h3 className="text-lg font-semibold">
-                    {p.nama} (Tingkat Kemiripan: {p.persentase.toFixed(1)}%)
-                  </h3>
-                  <div className="mt-2">
-                    <p className="font-medium">Solusi:</p>
-                    <p className="mt-1">{p.solusi}</p>
-                  </div>
-                  <div className="mt-2">
-                    <p className="font-medium">Pengobatan:</p>
-                    <p className="mt-1">{p.obat}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* Bagian Gejala */}
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">
+            Pilih Gejala yang Terlihat:
+          </h2>
+          <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+            {gejala.map(g => (
+              <div key={g.kode} 
+                className="flex items-start p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                <input 
+                  type="checkbox" 
+                  id={g.kode}
+                  checked={selectedGejala.includes(g.kode)}
+                  onChange={() => handleGejalaChange(g.kode)}
+                  className="mt-1 mr-3 h-4 w-4 text-blue-600"
+                />
+                <label htmlFor={g.kode} className="text-sm sm:text-base cursor-pointer">
+                  {g.nama}
+                </label>
+              </div>
+            ))}
           </div>
-        ) : (
-          <p>Tidak ditemukan penyakit yang cocok dengan gejala yang dipilih.</p>
-        )
-      )}
+          <button 
+            onClick={handleReset}
+            className="mt-4 w-full bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+          >
+            Reset Gejala
+          </button>
+        </div>
+
+        {/* Bagian Hasil */}
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">
+            Hasil Analisis:
+          </h2>
+          <div className="max-h-[60vh] overflow-y-auto pr-2">
+            {isLoading ? (
+              <LoadingSpinner />
+            ) : (
+              hasil.length > 0 ? (
+                <div className="space-y-4">
+                  {hasil.map(p => (
+                    <div key={p.kode} 
+                      className="border p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {p.nama}
+                        </h3>
+                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                          {p.persentase.toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="font-medium text-gray-700">Solusi:</p>
+                          <p className="text-sm text-gray-600 mt-1">{p.solusi}</p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-700">Pengobatan:</p>
+                          <p className="text-sm text-gray-600 mt-1">{p.obat}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center">
+                  {selectedGejala.length === 0 
+                    ? "Silakan pilih gejala terlebih dahulu" 
+                    : "Tidak ditemukan penyakit yang cocok dengan gejala yang dipilih"}
+                </p>
+              )
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
